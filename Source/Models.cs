@@ -80,7 +80,9 @@ public sealed class Preferences
     public List<string> Pins { get; set; } = new();
     public Dictionary<string,string> PinTargets { get; set; } = new();
     public int PinVisibilityVersion { get; set; }
-    public List<string> Order { get; set; } = new() { "CPU", "RAM", "GPU", "Drives", "Network", "Mainboard", "Controller", "Custom" };
+    public List<string> Order { get; set; } = new() { "Clock", "CPU", "RAM", "GPU", "Drives", "Network", "System", "Battery", "Mainboard", "Controller", "Custom" };
+    // Optional design per widget category; a missing or unknown entry uses Layout.
+    public Dictionary<string,string> LayoutByCategory { get; set; } = new();
     public static string Directory => System.IO.Path.GetDirectoryName(Environment.ProcessPath) ?? AppContext.BaseDirectory;
     public static string Path => System.IO.Path.Combine(Directory, "remastered-settings.json");
     public static Preferences Load()
@@ -106,7 +108,10 @@ public sealed class Preferences
             p.NetworkAddresses ??= new();p.VisibleNetworkAddresses ??= new();
             p.HiddenCategories ??= new(); p.HiddenDevices ??= new(); p.Pins ??= new(); p.PinTargets ??= new(); p.CpuTemperatureSources ??= new(); p.HiddenMetrics ??= new();
             if(p.PinVisibilityVersion<1){if(p.Pins.Count>0){p.HiddenCategories.RemoveAll(id=>id=="Custom");p.HiddenDevices.RemoveAll(id=>id=="custom");}p.PinVisibilityVersion=1;}
-            p.Order ??= new() { "CPU", "RAM", "GPU", "Drives", "Network", "Mainboard", "Controller", "Custom" };
+            p.Order ??= new() { "Clock", "CPU", "RAM", "GPU", "Drives", "Network", "System", "Battery", "Mainboard", "Controller", "Custom" };
+            // Widgets added in 1.02 join an existing order: the clock on top, the others after the hardware.
+            foreach(var added in new[]{"Clock","System","Battery"})if(!p.Order.Contains(added)){if(added=="Clock")p.Order.Insert(0,added);else{int at=p.Order.IndexOf("Mainboard");p.Order.Insert(at<0?p.Order.Count:at,added);}}
+            p.LayoutByCategory ??= new();
             return p;
         }
         catch { return new(); }
@@ -149,6 +154,7 @@ public record Metric(string Id, string Label, double? Value, string Unit, double
         if(IsCpuClock && u=="MHz")return (v/1000).ToString("0.00",System.Globalization.CultureInfo.InvariantCulture)+" GHz";
         if (u == "°C" && fahrenheit) { v = v * 1.8 + 32; u = "°F"; }
         if(u=="MB/s")return Math.Floor(Math.Max(0,v)).ToString("0")+" MB/s";
+        if(u.Length==0)return FormatNumber(v);
         if(u=="V")return Fixed(v,"0.000")+" V";
         if(u=="GB")return FormatGigabytes(v)+" GB";
         if(u is "Gbit/s" or "Mbit/s")return Fixed(v,"0.#")+" "+u;

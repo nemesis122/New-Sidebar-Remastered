@@ -51,7 +51,10 @@ public abstract class ModernCardBase:Border,IHardwareCard
  }
  protected static void SetHero(TextBlock? number,TextBlock? unit,Metric? metric,Preferences p)
  {
-  if(number==null)return;string text=metric?.Display(p.Fahrenheit)??"—";int split=text.LastIndexOf(' ');
+  if(number==null)return;
+  // Text readings (clock time, uptime) are shown whole; only "value unit" readings split.
+  if(metric?.TextValue!=null){number.Text=metric.TextValue;if(unit!=null)unit.Text="";return;}
+  string text=metric?.Display(p.Fahrenheit)??"—";int split=text.LastIndexOf(' ');
   number.Text=split<0?text:text[..split];if(unit!=null)unit.Text=split<0?(text=="—"?"":metric?.Unit??""):text[(split+1)..];
  }
  // Same rule as every other design: temperature leads wherever the device has one (CPU, GPU, drives);

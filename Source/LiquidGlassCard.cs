@@ -78,7 +78,8 @@ public sealed class LiquidGlassCard:ModernCardBase
   // Grafikgröße scales capsule and trace size; Linien-/Balkenstärke scales bar thickness and
   // line widths. "Text unter dem Graphen" moves each reading row beneath its capsule.
   double scale=S*Preferences.TextFactor(p.InstrumentScale),stroke=DesignCatalog.GraphSize(p);
-  if(hero!=null&&Plottable(hero))
+  // Text heroes: the clock leads with its time, the system widget with its uptime.
+  if(hero!=null&&(Plottable(hero)||hero.TextValue!=null&&hero.Unit!="IP"))
   {
    heroId=hero.Id;(number,unit)=HeroNumber(p,style.Form=="Inline"?24:30);
    var line=new StackPanel{Orientation=Orientation.Horizontal};line.Children.Add(number);line.Children.Add(unit);
@@ -98,7 +99,9 @@ public sealed class LiquidGlassCard:ModernCardBase
   double textRow=Math.Max(10.5*F(p.LabelTextScale),12*F(p.ValueTextScale))*S*1.45;
   // Tiles and columns collect their bars into a grid; with fewer than three bars a column
   // equalizer would be a lone block, so those cards use slim tubes instead.
-  var levelMetrics=device.Metrics.Where(m=>Plottable(m)&&m.Unit is not ("MB/s" or "B/s")).ToList();
+  // Counts (processes, threads, handles) have no scale; like text they are plain rows.
+  static bool IsCount(Metric m)=>m.Unit.Length==0&&m.TextValue==null;
+  var levelMetrics=device.Metrics.Where(m=>Plottable(m)&&!IsCount(m)&&m.Unit is not ("MB/s" or "B/s")).ToList();
   string form=style.Form=="Columns"&&levelMetrics.Count<3?"Tubes":style.Form;
   System.Windows.Controls.Primitives.UniformGrid? grid=null;
   if(form is "Tiles" or "Columns"&&levelMetrics.Count>0)
@@ -118,7 +121,8 @@ public sealed class LiquidGlassCard:ModernCardBase
    bool level=!(network&&!traced)&&m.Label is not ("Gesamt" or "Kapazität");
    // Link speed: the glass shows how much of the link download + upload use right now.
    if(network&&m.Unit is "Gbit/s" or "Mbit/s")links.Add(m.Id);
-   if(!Plottable(m)){content.Children.Add(new AddressReadoutPanel(Label(m.Label,p),Value(m,p,11.5)){Margin=new Thickness(4,3,4,3)});continue;}
+   if(m.Id==heroId&&m.TextValue!=null)continue;
+   if(!Plottable(m)||IsCount(m)){content.Children.Add(new AddressReadoutPanel(Label(m.Label,p),Value(m,p,11.5)){Margin=new Thickness(4,3,4,3)});continue;}
    Capsule NewCapsule(){var pill=new Capsule(D.Track,Accent,second,style,stroke,light);pills.Add((m.Id,pill,level));return pill;}
    TraceCapsule NewTrace(bool full){var trace=new TraceCapsule(D.Track,Accent,second,style,stroke,full,light);traces.Add((m.Id,trace));return trace;}
    if(grid!=null&&!traced)
@@ -220,7 +224,8 @@ public sealed class LiquidGlassCard:ModernCardBase
    ?new LinearGradientBrush(new GradientStopCollection{new GradientStop(Color.FromArgb(style.RimTop,a.R,a.G,a.B),0),new GradientStop(Color.FromArgb(style.RimTop,white.R,white.G,white.B),.35),new GradientStop(Color.FromArgb(style.RimBottom,b.R,b.G,b.B),1)},new Point(0,0),new Point(1,1))
    :new LinearGradientBrush(rimTop,rimBottom,new Point(0,0),new Point(0,1));
   var heroMetric=device.Metrics.FirstOrDefault(m=>m.Id==heroId);SetHero(number,unit,heroMetric,p);
-  ring?.Set(Ratio(heroMetric),heroMetric!=null&&Warn(heroMetric,p));
+  // A text hero (clock) fills its ring with the first percentage instead, e.g. the day progress.
+  ring?.Set(Ratio(heroMetric)??device.Metrics.Where(m=>m.Unit=="%").Select(Ratio).FirstOrDefault(r=>r!=null),heroMetric!=null&&Warn(heroMetric,p));
   foreach(var (id,pill,level) in pills){var m=device.Metrics.FirstOrDefault(x=>x.Id==id);if(links.Contains(id))pill.Exact=true;pill.Set(links.Contains(id)?LinkUse(device,m):level?Ratio(m):null,m!=null&&Warn(m,p));}
   foreach(var (id,trace) in traces)trace.Set(history.Read(DeviceId,id),history.LatestTime,TimeSpan.FromMilliseconds(Math.Max(2500,p.Interval*2.5)));
  }

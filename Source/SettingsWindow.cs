@@ -171,6 +171,7 @@ public sealed class SettingsWindow : Wpf.Ui.Controls.FluentWindow
             case "Darstellung":
                 Heading("Design & Schrift","Layout verändert den Aufbau. Das Farbschema bestimmt die Farben deiner Sidebar.");
                 Card("Darstellung",()=>{LayoutPicker();DesignPicker();});
+                Card("Design pro Widget",WidgetLayoutPickers);
                 Card("Schrift & Anzeige",()=> {
                 FontPicker();
                 Slider("Schriftgröße (%)",65,140,P.FontScale*100,5,"0",v=>P.FontScale=v/100);
@@ -205,7 +206,7 @@ public sealed class SettingsWindow : Wpf.Ui.Controls.FluentWindow
                     ColorSetting("Messwerte","ValueColor",()=>P.ValueColor,v=>P.ValueColor=v,()=>DesignCatalog.ColorOr(P.TextColor,DesignCatalog.Get(P.Theme).Text));
                 });
                 Card("Balken & Instrumente",()=>{
-                    var categories=new[]{"CPU","RAM","GPU","Drives","Network","Mainboard","Controller","Custom"};
+                    var categories=new[]{"CPU","RAM","GPU","Drives","Network","Clock","System","Battery","Mainboard","Controller","Custom"};
                     var category=new ComboBox{ItemsSource=categories,SelectedIndex=0};System.Windows.Automation.AutomationProperties.SetAutomationId(category,"GraphCategory");SettingRow("Widget",category);
                     string SelectedCategory()=>category.SelectedItem as string??"CPU";
                     var graphBox=ColorSetting("Akzentfarbe","GraphColor",()=>P.GraphColors.TryGetValue(SelectedCategory(),out var color)?color:"",v=>{if(v.Length==0)P.GraphColors.Remove(SelectedCategory());else P.GraphColors[SelectedCategory()]=v;},()=>DesignCatalog.CategoryColor(DesignCatalog.Get(P.Theme),SelectedCategory()));
@@ -310,7 +311,7 @@ public sealed class SettingsWindow : Wpf.Ui.Controls.FluentWindow
         {
             "Übersicht" or "System"=>("Alle Einstellungen zurücksetzen","Setzt alle Einstellungen auf den Auslieferungszustand. Sprache, Autostart und Sensorzugriff bleiben erhalten.",ResetAllSettings),
             "Position"=>("Position & Größe zurücksetzen","Monitor, Bildschirmseite, Breite, Spalten, Einpassen, Platz reservieren und Vordergrund auf Standard. Autostart bleibt unverändert.",()=>{P.Monitor=d.Monitor;P.Side=d.Side;P.ColumnWidth=d.ColumnWidth;P.Columns=d.Columns;P.Fit=d.Fit;P.ReserveSpace=d.ReserveSpace;P.Topmost=d.Topmost;}),
-            "Darstellung"=>("Design & Schrift zurücksetzen","Layout, Farbschema, Schriftart, Schrift- und Grafikgröße, Widget-Hintergrund, Text unter dem Graphen und Temperatureinheit auf Standard.",()=>{P.Layout=d.Layout;P.Theme=d.Theme;P.TextFontFamily=d.TextFontFamily;P.FontScale=d.FontScale;P.InstrumentScale=d.InstrumentScale;P.Opacity=d.Opacity;P.ExpandMultiColumnReadings=d.ExpandMultiColumnReadings;P.Fahrenheit=d.Fahrenheit;}),
+            "Darstellung"=>("Design & Schrift zurücksetzen","Layout, Design pro Widget, Farbschema, Schriftart, Schrift- und Grafikgröße, Widget-Hintergrund, Text unter dem Graphen und Temperatureinheit auf Standard.",()=>{P.Layout=d.Layout;P.Theme=d.Theme;P.TextFontFamily=d.TextFontFamily;P.FontScale=d.FontScale;P.InstrumentScale=d.InstrumentScale;P.Opacity=d.Opacity;P.ExpandMultiColumnReadings=d.ExpandMultiColumnReadings;P.Fahrenheit=d.Fahrenheit;P.LayoutByCategory.Clear();}),
             "Textgrößen"=>("Textgrößen zurücksetzen","Alle Text- und Hardware-Symbolgrößen auf 100 % und alle Texte und Symbole wieder anzeigen.",()=>{P.ResetTypography();P.ShowAllTextAndIcons();}),
             "Farben"=>("Farbanpassungen zurücksetzen","Alle Text- und Diagrammfarben wieder aus dem Farbschema und Linien- / Balkenstärke auf 100 %.",()=>{P.TextColor=P.LabelColor=P.HardwareNameColor=P.ValueColor=P.GraphTrackColor=P.SecondaryGraphColor="";P.GraphColors.Clear();P.GraphScale=1;}),
             "CPU"=>("CPU-Temperatur zurücksetzen","Alle CPUs verwenden wieder die automatische Temperaturquelle.",()=>P.CpuTemperatureSources.Clear()),
@@ -399,6 +400,19 @@ public sealed class SettingsWindow : Wpf.Ui.Controls.FluentWindow
     }
     // Keep scoped templates and their animation resources available when fields are moved or reused.
     private void PreserveControlResources(UIElement child){if(child is FrameworkElement element&&!element.Resources.MergedDictionaries.Contains(Resources))element.Resources.MergedDictionaries.Add(Resources);}
+    // One design picker per widget that is shown; "Wie oben" keeps the global card layout.
+    private void WidgetLayoutPickers()
+    {
+        var present=sidebar.Latest?.Devices.Select(d=>d.Category).Distinct().ToList()??P.Order;
+        foreach(var category in P.Order.Where(c=>present.Contains(c)&&!P.HiddenCategories.Contains(c)).Concat(present.Where(c=>!P.Order.Contains(c))).Distinct())
+        {
+            var inherit=new CardLayout("","Wie oben","");var options=new List<CardLayout>{inherit};options.AddRange(CardLayouts.All);
+            var selected=P.LayoutByCategory.TryGetValue(category,out var key)?options.FirstOrDefault(o=>o.Key==key)??inherit:inherit;
+            var picker=Select(Ui.SidebarLabel(category),options,selected,choice=>{if(choice.Key.Length==0)P.LayoutByCategory.Remove(category);else P.LayoutByCategory[category]=choice.Key;});
+            System.Windows.Automation.AutomationProperties.SetAutomationId(picker,"WidgetLayout:"+category);
+        }
+        Note("Wie oben = Kartenlayout aus der Auswahl darüber.");
+    }
     private void Card(string title,Action build)
     {
         int start=page.Children.Count;build();var body=new StackPanel();var heading=Ui.Text(title,13);heading.FontWeight=FontWeights.SemiBold;heading.Margin=new Thickness(0,0,0,5);body.Children.Add(heading);

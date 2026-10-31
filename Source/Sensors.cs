@@ -218,6 +218,7 @@ public sealed class SensorService
             }
             catch (Exception e) { warnings.Add(nic.Name + ": " + e.Message); }
         }
+        AddDesktopWidgets(devices, warnings);
         foreach (var d in devices)
             foreach (var m in d.Metrics.Where(m => !rows.Any(r => r.Id == m.Id))) rows.Add(new(m.Id, d.Name, m.Label, m.IsCpuClock?"Clock":d.Category, m.Value, m.Unit,m.IsCpuClock?"Cpu":""));
         var seeds=new List<DevicePreferenceSeed>();
@@ -254,4 +255,43 @@ public sealed class SensorService
     [DllImport("kernel32.dll")] private static extern bool GetSystemTimes(out FileTime idle, out FileTime kernel, out FileTime user);
     [StructLayout(LayoutKind.Sequential)] private struct MemoryStatus { public uint Length, Load; public ulong TotalPhysical, AvailablePhysical, TotalPage, AvailablePage, TotalVirtual, AvailableVirtual, AvailableExtended; }
     [DllImport("kernel32.dll", SetLastError=true)] private static extern bool GlobalMemoryStatusEx(ref MemoryStatus status);
+    // Desktop widgets beside the hardware: clock, system and (on laptops) battery. They are cheap
+    // Windows calls, so they refresh with every sample like the other cards.
+    private static void AddDesktopWidgets(List<Device> devices, List<string> warnings)
+    {
+        var now = DateTime.Now;
+        devices.Add(new("windows/clock", "Clock", now.ToString("D", System.Globalization.CultureInfo.CurrentCulture), new() {
+            new Metric("windows/clock/time", "Uhrzeit", null, "", TextValue: now.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture)),
+            new("windows/clock/day", "Tagesfortschritt", now.TimeOfDay.TotalMinutes / 14.4, "%"),
+            new Metric("windows/clock/week", "Kalenderwoche", null, "", TextValue: "KW " + System.Globalization.ISOWeek.GetWeekOfYear(now)) }));
+        try
+        {
+            var info = new PerformanceInformation { Size = (uint)Marshal.SizeOf<PerformanceInformation>() };
+            bool counted = GetPerformanceInfo(out info, info.Size);
+            devices.Add(new("windows/system", "System", Environment.MachineName, new() {
+                new Metric("windows/system/uptime", "Betriebszeit", null, "", TextValue: Uptime(TimeSpan.FromMilliseconds(Environment.TickCount64))),
+                new("windows/system/processes", "Prozesse", counted ? info.ProcessCount : null, "", 0),
+                new("windows/system/threads", "Threads", counted ? info.ThreadCount : null, "", 0),
+                new("windows/system/handles", "Handles", counted ? info.HandleCount : null, "", 0) }));
+        }
+        catch (Exception e) { warnings.Add("System: " + e.Message); }
+        try
+        {
+            var power = System.Windows.Forms.SystemInformation.PowerStatus;
+            if (!power.BatteryChargeStatus.HasFlag(System.Windows.Forms.BatteryChargeStatus.NoSystemBattery) && power.BatteryChargeStatus != System.Windows.Forms.BatteryChargeStatus.Unknown && power.BatteryLifePercent is >= 0 and <= 1)
+            {
+                bool plugged = power.PowerLineStatus == System.Windows.Forms.PowerLineStatus.Online, charging = power.BatteryChargeStatus.HasFlag(System.Windows.Forms.BatteryChargeStatus.Charging);
+                string state = charging ? "Charging" : plugged ? "Plugged in" : "On battery";
+                string remaining = !plugged && power.BatteryLifeRemaining > 0 ? Uptime(TimeSpan.FromSeconds(power.BatteryLifeRemaining)) : "—";
+                devices.Add(new("windows/battery", "Battery", "Internal battery", new() {
+                    new("windows/battery/charge", "Ladung", Math.Round(power.BatteryLifePercent * 100), "%"),
+                    new Metric("windows/battery/state", "Status", null, "", TextValue: state),
+                    new Metric("windows/battery/remaining", "Restzeit", null, "", TextValue: remaining) }));
+            }
+        }
+        catch (Exception e) { warnings.Add("Battery: " + e.Message); }
+    }
+    public static string Uptime(TimeSpan span) => span.TotalDays >= 1 ? $"{(int)span.TotalDays}d {span.Hours}h" : span.TotalHours >= 1 ? $"{span.Hours}h {span.Minutes:00}m" : $"{Math.Max(0, span.Minutes)}m";
+    [StructLayout(LayoutKind.Sequential)] private struct PerformanceInformation { public uint Size; public UIntPtr CommitTotal, CommitLimit, CommitPeak, PhysicalTotal, PhysicalAvailable, SystemCache, KernelTotal, KernelPaged, KernelNonpaged, PageSize; public uint HandleCount, ProcessCount, ThreadCount; }
+    [DllImport("psapi.dll", SetLastError=true)] private static extern bool GetPerformanceInfo(out PerformanceInformation information, uint size);
 }

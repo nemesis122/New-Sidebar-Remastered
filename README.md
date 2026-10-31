@@ -1,8 +1,8 @@
 # Sidebar Remastered by NemeSIS
 
-A glass-styled hardware monitor that docks to the edge of your Windows desktop. CPU, GPU, RAM, drives and network in **ten glass designs** and **19 color themes**, as one portable EXE with .NET included.
+A glass-styled hardware monitor that docks to the edge of your Windows desktop. CPU, GPU, RAM, drives, network, clock, system and battery widgets in **ten glass designs** and **19 color themes**, every widget in the design you choose, as one portable EXE with .NET included.
 
-**[Download v1.01.1.0](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.01.1.0/Sidebar-Remastered-v1.01.1.0.exe)** · [Source ZIP](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.01.1.0/Sidebar-v1.01.1.0-Source.zip) · [All releases](https://github.com/nemesis122/New-Sidebar-Remastered/releases)
+**[Download v1.02.0.0](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.02.0.0/Sidebar-Remastered-v1.02.0.0.exe)** · [Source ZIP](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.02.0.0/Sidebar-v1.02.0.0-Source.zip) · [All releases](https://github.com/nemesis122/New-Sidebar-Remastered/releases)
 
 <p align="center">
 <a href="Previews/LiquidGlass-2Column.png"><img src="Previews/LiquidGlass-2Column.png" width="560" alt="Liquid Glass, two columns, demo data"></a>
@@ -57,6 +57,28 @@ Every design shares one construction: a translucent slab, a rim that catches lig
 <tr><td>Glass Inline</td><td><a href="Previews/GlassInline-2Column.png"><img src="Previews/GlassInline-2Column.png" width="320" alt="Glass Inline, two columns"></a></td></tr>
 </table>
 
+## Design per widget
+
+Every widget can have its own design. Choose a card layout for the whole sidebar, then give single widgets their own look under **Appearance & text → Design per widget**, for example the clock as a ring, the CPU as columns and the drives as inline rows. "Same as above" keeps the main layout.
+
+<p align="center">
+<a href="Previews/Mixed-2Column.png"><img src="Previews/Mixed-2Column.png" width="560" alt="Different designs per widget, two columns, demo data"></a>
+</p>
+
+## Widgets
+
+| Widget | Shows |
+| --- | --- |
+| **CPU, GPU** | Temperature as the large number, load, clock, power, voltage, fan, VRAM |
+| **RAM** | Load, used, available and total memory |
+| **Drives** | Temperature, used space, live read/write traces |
+| **Network** | Live download/upload traces, link use, optional internal/external IP |
+| **Clock** | Time as the large number, the date, day progress and calendar week |
+| **System** | Uptime, processes, threads and handles |
+| **Battery** | Charge, charging state and remaining time (only on devices with a battery) |
+
+Show, hide and reorder widgets under **Cards & order**; hide single readings under **Devices & readings**.
+
 ## 19 color themes
 
 The color theme is independent of the design. Here every theme on the Liquid Glass CPU card:
@@ -72,7 +94,7 @@ The color theme is independent of the design. Here every theme on the Liquid Gla
 
 | Area | What you can change |
 | --- | --- |
-| Design and placement | Ten glass designs; monitor; left or right edge; column width; 1–4 columns; fit-to-view or scrolling; text below the capsules |
+| Design and placement | Ten glass designs, a different design per widget if you like; monitor; left or right edge; column width; 1–4 columns; fit-to-view or scrolling; text below the capsules |
 | Typography | Font family, general size, separate widget-title, hardware-name, label, reading, instrument-number and unit sizes; individual visibility |
 | Hardware icons | Show/hide and size |
 | Colors and graphics | Color theme, text/label/hardware-name/reading colors, accent color per widget, secondary color, capsule track, graphic size and line/bar thickness |

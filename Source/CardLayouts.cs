@@ -40,11 +40,13 @@ public static class CardLayouts
  // One registry row per card family: adding a design is one line plus its card class.
  private delegate IHardwareCard CardFactory(Device device,Preferences prefs,MetricHistory history);
  private static readonly (string[] Keys,CardFactory Create)[] Registry={
-  (GlassStyle.All.Select(s=>s.Key).ToArray(),(d,p,h)=>new LiquidGlassCard(d,p,h,GlassStyle.Get(BaseLayout(p.Layout)))),
+  (GlassStyle.All.Select(s=>s.Key).ToArray(),(d,p,h)=>new LiquidGlassCard(d,p,h,GlassStyle.Get(LayoutFor(d,p)))),
  };
  private static readonly Dictionary<string,CardFactory> Factories=Registry.SelectMany(r=>r.Keys.Select(k=>(k,r.Create))).ToDictionary(x=>x.k,x=>x.Create,StringComparer.Ordinal);
  public static bool HasDedicatedCard(string key)=>Factories.ContainsKey(key);
  // Every layout is a glass style; an unknown or removed name opens Liquid Glass.
- private static IHardwareCard CreateCore(Device d,Preferences p,MetricHistory? history)=>Factories.TryGetValue(BaseLayout(p.Layout),out var factory)?factory(d,p,history??new MetricHistory()):Factories[All[0].Key](d,p,history??new MetricHistory());
+ // A widget's own design wins over the global layout; unknown names fall back to the global one.
+ public static string LayoutFor(Device d,Preferences p)=>p.LayoutByCategory!=null&&p.LayoutByCategory.TryGetValue(d.Category,out var own)&&All.Any(l=>l.Key==BaseLayout(own))?BaseLayout(own):BaseLayout(p.Layout);
+ private static IHardwareCard CreateCore(Device d,Preferences p,MetricHistory? history)=>Factories.TryGetValue(LayoutFor(d,p),out var factory)?factory(d,p,history??new MetricHistory()):Factories[All[0].Key](d,p,history??new MetricHistory());
 }
 public interface IHardwareCard {FrameworkElement View {get;} void Update(Device d,Preferences p);}
