@@ -36,7 +36,7 @@ public sealed record GlassStyle(string Key,double Lift=.10,byte Top=235,byte Bot
   new("GlassRing",Lift:.12,Radius:22,Sheen:40,SheenHeight:52,RimTop:140,RimBottom:30,PillHeight:6,Form:"Ring"),
   new("GlassInline",Lift:.06,Radius:12,Sheen:22,SheenHeight:32,RimTop:100,RimBottom:16,LiquidA:150,LiquidB:185,PillHeight:6,Form:"Inline"),
   new("AcrylicWidgets",Lift:.16,Top:205,Bottom:175,Radius:8,Sheen:12,SheenHeight:30,RimTop:46,RimBottom:30,LiquidA:190,LiquidB:230,PillHeight:4,Form:"Fluent",HeroSize:32),
-  new("LiquidGlass2",Lift:.12,Top:190,Bottom:145,Radius:24,Sheen:60,SheenHeight:72,RimTop:210,RimBottom:34,LiquidA:150,LiquidB:200,PillHeight:26,Gloss:true,Animate:true,HeroSize:40),
+  new("LiquidGlass2",Lift:.12,Top:190,Bottom:145,Radius:24,Sheen:60,SheenHeight:72,RimTop:210,RimBottom:34,LiquidA:78,LiquidB:112,PillHeight:26,Gloss:true,Animate:true,HeroSize:40),
   new("CleanDashboard",Lift:0,Top:235,Bottom:235,Radius:10,Sheen:0,SheenHeight:0,RimTop:44,RimBottom:44,LiquidA:210,LiquidB:230,PillHeight:3,Form:"Clean",Flat:true,HeroSize:34)
  };
  public static GlassStyle Get(string key)=>All.FirstOrDefault(s=>s.Key==key)??All[0];
@@ -337,7 +337,7 @@ public sealed class LiquidGlassCard:ModernCardBase
     var fade=new LinearGradientBrush(new GradientStopCollection{new GradientStop(edge,0),new GradientStop(edge,.22),new GradientStop(clear,.36),new GradientStop(clear,.64),new GradientStop(edge,.78),new GradientStop(edge,1)},new Point(0,0),new Point(0,1));fade.Freeze();
     dc.DrawRectangle(fade,null,new Rect(Math.Max(0,fillWidth-meniscus),0,meniscus,h));}
    // Gloss: an inner highlight across the upper half of the whole capsule, like polished glass.
-   if(style.Gloss)dc.DrawRectangle(new LinearGradientBrush(Color.FromArgb(light?(byte)70:(byte)58,255,255,255),Color.FromArgb(0,255,255,255),new Point(0,0),new Point(0,.55)),null,new Rect(0,0,w,h));
+   if(style.Gloss)dc.DrawRectangle(new LinearGradientBrush(Color.FromArgb(light?(byte)60:(byte)34,255,255,255),Color.FromArgb(0,255,255,255),new Point(0,0),new Point(0,.42)),null,new Rect(0,0,w,h));
    // Smoke glass: a glowing hairline along the top of the smoky liquid.
    if(style.Smoke>0&&!light)dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(150,a.R,a.G,a.B)),null,new Rect(0,0,fillWidth,Math.Max(1,stroke)));
    dc.Pop();
