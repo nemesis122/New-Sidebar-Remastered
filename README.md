@@ -1,8 +1,8 @@
 # Sidebar Remastered by NemeSIS
 
-A glass-styled hardware monitor that docks to the edge of your Windows desktop. CPU, GPU, RAM, drives and network in **six glass designs** and **19 color themes**, as one portable EXE with .NET included.
+A glass-styled hardware monitor that docks to the edge of your Windows desktop. CPU, GPU, RAM, drives and network in **ten glass designs** and **19 color themes**, as one portable EXE with .NET included.
 
-**[Download v1.00.1.0](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.00.1.0/Sidebar-Remastered-v1.00.1.0.exe)** · [Source ZIP](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.00.1.0/Sidebar-v1.00.1.0-Source.zip) · [All releases](https://github.com/nemesis122/New-Sidebar-Remastered/releases)
+**[Download v1.01.0.0](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.01.0.0/Sidebar-Remastered-v1.01.0.0.exe)** · [Source ZIP](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.01.0.0/Sidebar-v1.01.0.0-Source.zip) · [All releases](https://github.com/nemesis122/New-Sidebar-Remastered/releases)
 
 <p align="center">
 <a href="Previews/LiquidGlass-2Column.png"><img src="Previews/LiquidGlass-2Column.png" width="560" alt="Liquid Glass, two columns, demo data"></a>
@@ -12,29 +12,33 @@ A glass-styled hardware monitor that docks to the edge of your Windows desktop. 
 
 Sidebar Remastered is the glass edition of [Sidebar by NemeSIS](https://github.com/nemesis122/NewSidebar). It keeps the same sensor engine and settings, focuses on one design family, and installs side by side with the original: its own EXE, settings file (`remastered-settings.json`) and Windows startup task.
 
-## Six glass designs
+## Ten glass designs
 
-Every design shares one construction: a translucent slab, a rim that catches light at the top edge, a sheen across the upper third, and every reading in a glass capsule.
+Every design shares one construction: a translucent slab, a rim that catches light at the top edge and a sheen across the upper third. The designs differ in material and in how they hold the readings.
 
-| Design | Material |
-| --- | --- |
-| **Liquid Glass** | Clear glass, capsules filled like liquid to their level |
-| **Frost Glass** | Frosted white glass, brighter rim, rounder corners |
-| **Aqua Glass** | Glass tinted in each hardware's accent color |
-| **Prism Glass** | Rim refracted from the accent into a neighbouring hue |
-| **Smoke Glass** | Dark smoked glass with glowing capsules |
-| **Glass Tubes** | Slim glass tubes beneath each reading row |
+| Design | Form | Character |
+| --- | --- | --- |
+| **Liquid Glass** | Capsules | Clear glass, readings inside capsules filled like liquid |
+| **Frost Glass** | Capsules | Frosted white glass, brighter rim, rounder corners |
+| **Aqua Glass** | Capsules | Glass tinted in each hardware's accent color |
+| **Prism Glass** | Capsules | Rim refracted from the accent into a neighbouring hue |
+| **Smoke Glass** | Capsules | Dark smoked glass, translucent fill with a glowing edge |
+| **Glass Tubes** | Tubes | Reading row above a slim glass tube |
+| **Glass Tiles** | Tiles | Two-column glass tiles that fill from the bottom |
+| **Glass Columns** | Columns | An equalizer of vertical glass tubes with values beneath |
+| **Glass Ring** | Ring | The main reading as a glass ring, the rest as slim tubes |
+| **Glass Inline** | Inline | One dense line per reading: label, short bar, value |
 
 <table>
-<tr><th>Liquid Glass</th><th>Frost Glass</th><th>Aqua Glass</th></tr>
-<tr><td valign="top"><a href="Previews/LiquidGlass-1Column.png"><img src="Previews/LiquidGlass-1Column.png" width="250" alt="Liquid Glass, one column"></a></td><td valign="top"><a href="Previews/FrostGlass-1Column.png"><img src="Previews/FrostGlass-1Column.png" width="250" alt="Frost Glass, one column"></a></td><td valign="top"><a href="Previews/AquaGlass-1Column.png"><img src="Previews/AquaGlass-1Column.png" width="250" alt="Aqua Glass, one column"></a></td></tr>
-<tr><th>Prism Glass</th><th>Smoke Glass</th><th>Glass Tubes</th></tr>
-<tr><td valign="top"><a href="Previews/PrismGlass-1Column.png"><img src="Previews/PrismGlass-1Column.png" width="250" alt="Prism Glass, one column"></a></td><td valign="top"><a href="Previews/SmokeGlass-1Column.png"><img src="Previews/SmokeGlass-1Column.png" width="250" alt="Smoke Glass, one column"></a></td><td valign="top"><a href="Previews/GlassTubes-1Column.png"><img src="Previews/GlassTubes-1Column.png" width="250" alt="Glass Tubes, one column"></a></td></tr>
+<tr><th>Liquid Glass</th><th>Frost Glass</th><th>Aqua Glass</th><th>Prism Glass</th><th>Smoke Glass</th></tr>
+<tr><td valign="top"><a href="Previews/LiquidGlass-1Column.png"><img src="Previews/LiquidGlass-1Column.png" width="150" alt="Liquid Glass, one column"></a></td><td valign="top"><a href="Previews/FrostGlass-1Column.png"><img src="Previews/FrostGlass-1Column.png" width="150" alt="Frost Glass, one column"></a></td><td valign="top"><a href="Previews/AquaGlass-1Column.png"><img src="Previews/AquaGlass-1Column.png" width="150" alt="Aqua Glass, one column"></a></td><td valign="top"><a href="Previews/PrismGlass-1Column.png"><img src="Previews/PrismGlass-1Column.png" width="150" alt="Prism Glass, one column"></a></td><td valign="top"><a href="Previews/SmokeGlass-1Column.png"><img src="Previews/SmokeGlass-1Column.png" width="150" alt="Smoke Glass, one column"></a></td></tr>
+<tr><th>Glass Tubes</th><th>Glass Tiles</th><th>Glass Columns</th><th>Glass Ring</th><th>Glass Inline</th></tr>
+<tr><td valign="top"><a href="Previews/GlassTubes-1Column.png"><img src="Previews/GlassTubes-1Column.png" width="150" alt="Glass Tubes, one column"></a></td><td valign="top"><a href="Previews/GlassTiles-1Column.png"><img src="Previews/GlassTiles-1Column.png" width="150" alt="Glass Tiles, one column"></a></td><td valign="top"><a href="Previews/GlassColumns-1Column.png"><img src="Previews/GlassColumns-1Column.png" width="150" alt="Glass Columns, one column"></a></td><td valign="top"><a href="Previews/GlassRing-1Column.png"><img src="Previews/GlassRing-1Column.png" width="150" alt="Glass Ring, one column"></a></td><td valign="top"><a href="Previews/GlassInline-1Column.png"><img src="Previews/GlassInline-1Column.png" width="150" alt="Glass Inline, one column"></a></td></tr>
 </table>
 
-- **Temperature first:** CPU, GPU and drives show their temperature as the large number; RAM shows its load.
-- **Live traces:** network download/upload and drive read/write show the last 60 seconds inside their capsule, scaled to the last minute's peak.
-- **Link use:** the link-speed capsule fills with the share of the link in use right now.
+- **Temperature first:** CPU, GPU and drives show their temperature as the large number (inside the ring in Glass Ring); RAM shows its load.
+- **Live traces:** network download/upload and drive read/write show the last 60 seconds in glass, scaled to the last minute's peak.
+- **Link use:** the link-speed glass fills with the share of the link in use right now.
 - **Precise readings:** voltages with three decimals, clocks in GHz with two, memory sizes with one, link speeds like 2.5 Gbit/s.
 
 ### Two columns
@@ -47,6 +51,10 @@ Every design shares one construction: a translucent slab, a rim that catches lig
 <tr><td>Prism Glass</td><td><a href="Previews/PrismGlass-2Column.png"><img src="Previews/PrismGlass-2Column.png" width="320" alt="Prism Glass, two columns"></a></td></tr>
 <tr><td>Smoke Glass</td><td><a href="Previews/SmokeGlass-2Column.png"><img src="Previews/SmokeGlass-2Column.png" width="320" alt="Smoke Glass, two columns"></a></td></tr>
 <tr><td>Glass Tubes</td><td><a href="Previews/GlassTubes-2Column.png"><img src="Previews/GlassTubes-2Column.png" width="320" alt="Glass Tubes, two columns"></a></td></tr>
+<tr><td>Glass Tiles</td><td><a href="Previews/GlassTiles-2Column.png"><img src="Previews/GlassTiles-2Column.png" width="320" alt="Glass Tiles, two columns"></a></td></tr>
+<tr><td>Glass Columns</td><td><a href="Previews/GlassColumns-2Column.png"><img src="Previews/GlassColumns-2Column.png" width="320" alt="Glass Columns, two columns"></a></td></tr>
+<tr><td>Glass Ring</td><td><a href="Previews/GlassRing-2Column.png"><img src="Previews/GlassRing-2Column.png" width="320" alt="Glass Ring, two columns"></a></td></tr>
+<tr><td>Glass Inline</td><td><a href="Previews/GlassInline-2Column.png"><img src="Previews/GlassInline-2Column.png" width="320" alt="Glass Inline, two columns"></a></td></tr>
 </table>
 
 ## 19 color themes
@@ -64,7 +72,7 @@ The color theme is independent of the design. Here every theme on the Liquid Gla
 
 | Area | What you can change |
 | --- | --- |
-| Design and placement | Six glass designs; monitor; left or right edge; column width; 1–4 columns; fit-to-view or scrolling; text below the capsules |
+| Design and placement | Ten glass designs; monitor; left or right edge; column width; 1–4 columns; fit-to-view or scrolling; text below the capsules |
 | Typography | Font family, general size, separate widget-title, hardware-name, label, reading, instrument-number and unit sizes; individual visibility |
 | Hardware icons | Show/hide and size |
 | Colors and graphics | Color theme, text/label/hardware-name/reading colors, accent color per widget, secondary color, capsule track, graphic size and line/bar thickness |
