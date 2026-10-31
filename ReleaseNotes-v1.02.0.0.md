@@ -4,7 +4,7 @@ Portable Windows x64, .NET included. **EXE and matching source ZIP are both atta
 
 ## New: design per widget
 
-Under **Appearance & text → Design per widget** every widget gets its own design, for example the clock as a Glass Ring, the CPU as Glass Columns, RAM as Glass Tiles and the drives as Glass Inline. "Same as above" keeps the card layout chosen for the whole sidebar. The page's reset button also clears these choices.
+Under **Cards & order → Design per widget** every widget gets its own design, for example the clock as a Glass Ring, the CPU as Glass Columns, RAM as Glass Tiles and the drives as Glass Inline. "Same as above" keeps the card layout chosen for the whole sidebar. The reset button of Cards & order also clears these choices.
 
 ## New widgets
 

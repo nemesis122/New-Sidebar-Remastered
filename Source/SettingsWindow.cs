@@ -171,7 +171,6 @@ public sealed class SettingsWindow : Wpf.Ui.Controls.FluentWindow
             case "Darstellung":
                 Heading("Design & Schrift","Layout verändert den Aufbau. Das Farbschema bestimmt die Farben deiner Sidebar.");
                 Card("Darstellung",()=>{LayoutPicker();DesignPicker();});
-                Card("Design pro Widget",WidgetLayoutPickers);
                 Card("Schrift & Anzeige",()=> {
                 FontPicker();
                 Slider("Schriftgröße (%)",65,140,P.FontScale*100,5,"0",v=>P.FontScale=v/100);
@@ -244,6 +243,7 @@ public sealed class SettingsWindow : Wpf.Ui.Controls.FluentWindow
                     var check = new CheckBox { Content = Ui.Icon(category)+"  "+category, IsChecked = !P.HiddenCategories.Contains(category) };
                     check.Click += (_,_)=>{ Toggle(P.HiddenCategories,category,check.IsChecked!=true); sidebar.Apply(); }; row.Children.Add(check);var frame=new Border{Child=row,Padding=new Thickness(14,5,14,5),Margin=new Thickness(0,0,0,7),CornerRadius=new CornerRadius(9),BorderThickness=new Thickness(1)};frame.SetResourceReference(Border.BackgroundProperty,"Panel");frame.SetResourceReference(Border.BorderBrushProperty,"Edge");page.Children.Add(frame);
                 }
+                Card("Design pro Widget",WidgetLayoutPickers);
                 break;
             case "Geräte":
             case "Werte":
@@ -311,11 +311,11 @@ public sealed class SettingsWindow : Wpf.Ui.Controls.FluentWindow
         {
             "Übersicht" or "System"=>("Alle Einstellungen zurücksetzen","Setzt alle Einstellungen auf den Auslieferungszustand. Sprache, Autostart und Sensorzugriff bleiben erhalten.",ResetAllSettings),
             "Position"=>("Position & Größe zurücksetzen","Monitor, Bildschirmseite, Breite, Spalten, Einpassen, Platz reservieren und Vordergrund auf Standard. Autostart bleibt unverändert.",()=>{P.Monitor=d.Monitor;P.Side=d.Side;P.ColumnWidth=d.ColumnWidth;P.Columns=d.Columns;P.Fit=d.Fit;P.ReserveSpace=d.ReserveSpace;P.Topmost=d.Topmost;}),
-            "Darstellung"=>("Design & Schrift zurücksetzen","Layout, Design pro Widget, Farbschema, Schriftart, Schrift- und Grafikgröße, Widget-Hintergrund, Text unter dem Graphen und Temperatureinheit auf Standard.",()=>{P.Layout=d.Layout;P.Theme=d.Theme;P.TextFontFamily=d.TextFontFamily;P.FontScale=d.FontScale;P.InstrumentScale=d.InstrumentScale;P.Opacity=d.Opacity;P.ExpandMultiColumnReadings=d.ExpandMultiColumnReadings;P.Fahrenheit=d.Fahrenheit;P.LayoutByCategory.Clear();}),
+            "Darstellung"=>("Design & Schrift zurücksetzen","Layout, Farbschema, Schriftart, Schrift- und Grafikgröße, Widget-Hintergrund, Text unter dem Graphen und Temperatureinheit auf Standard.",()=>{P.Layout=d.Layout;P.Theme=d.Theme;P.TextFontFamily=d.TextFontFamily;P.FontScale=d.FontScale;P.InstrumentScale=d.InstrumentScale;P.Opacity=d.Opacity;P.ExpandMultiColumnReadings=d.ExpandMultiColumnReadings;P.Fahrenheit=d.Fahrenheit;}),
             "Textgrößen"=>("Textgrößen zurücksetzen","Alle Text- und Hardware-Symbolgrößen auf 100 % und alle Texte und Symbole wieder anzeigen.",()=>{P.ResetTypography();P.ShowAllTextAndIcons();}),
             "Farben"=>("Farbanpassungen zurücksetzen","Alle Text- und Diagrammfarben wieder aus dem Farbschema und Linien- / Balkenstärke auf 100 %.",()=>{P.TextColor=P.LabelColor=P.HardwareNameColor=P.ValueColor=P.GraphTrackColor=P.SecondaryGraphColor="";P.GraphColors.Clear();P.GraphScale=1;}),
             "CPU"=>("CPU-Temperatur zurücksetzen","Alle CPUs verwenden wieder die automatische Temperaturquelle.",()=>P.CpuTemperatureSources.Clear()),
-            "Karten"=>("Karten & Reihenfolge zurücksetzen","Standardreihenfolge, Standard-Sichtbarkeit der Karten und getrennte Karten statt einer gemeinsamen Kachel.",()=>{P.CombineSensorCards=d.CombineSensorCards;P.HiddenCategories=d.HiddenCategories;if(P.Pins.Count>0)P.HiddenCategories.RemoveAll(c=>c=="Custom");P.Order=d.Order;}),
+            "Karten"=>("Karten & Reihenfolge zurücksetzen","Standardreihenfolge, Standard-Sichtbarkeit, Design pro Widget und getrennte Karten statt einer gemeinsamen Kachel.",()=>{P.CombineSensorCards=d.CombineSensorCards;P.LayoutByCategory.Clear();P.HiddenCategories=d.HiddenCategories;if(P.Pins.Count>0)P.HiddenCategories.RemoveAll(c=>c=="Custom");P.Order=d.Order;}),
             "Geräte" or "Werte"=>("Geräte & Werte zurücksetzen","Alle Geräte und Werte in Standard-Sichtbarkeit, eigene Hardware-Namen werden entfernt. Eigene Sensoren bleiben erhalten.",()=>{P.HiddenDevices.Clear();P.DeviceDefaultsApplied=false;P.HiddenMetrics.Clear();P.VisibleNetworkAddresses.Clear();P.HardwareNames.Clear();}),
             "Sensoren" or "Eigene Werte"=>("Alle eigenen Werte entfernen","Entfernt alle hinzugefügten Sensoren und ihre Ziel-Widgets.",()=>{P.Pins.Clear();P.PinTargets.Clear();}),
             "Grenzen"=>("Warngrenzen zurücksetzen","Temperaturgrenze 85 °C und Auslastungsgrenze 95 %.",()=>{P.TempLimit=d.TempLimit;P.LoadLimit=d.LoadLimit;}),

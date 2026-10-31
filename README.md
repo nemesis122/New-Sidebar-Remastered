@@ -59,7 +59,7 @@ Every design shares one construction: a translucent slab, a rim that catches lig
 
 ## Design per widget
 
-Every widget can have its own design. Choose a card layout for the whole sidebar, then give single widgets their own look under **Appearance & text → Design per widget**, for example the clock as a ring, the CPU as columns and the drives as inline rows. "Same as above" keeps the main layout.
+Every widget can have its own design. Choose a card layout for the whole sidebar, then give single widgets their own look under **Cards & order → Design per widget**, for example the clock as a ring, the CPU as columns and the drives as inline rows. "Same as above" keeps the main layout.
 
 <p align="center">
 <a href="Previews/Mixed-2Column.png"><img src="Previews/Mixed-2Column.png" width="560" alt="Different designs per widget, two columns, demo data"></a>
