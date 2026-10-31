@@ -1,8 +1,8 @@
 # Sidebar Remastered by NemeSIS
 
-A glass-styled hardware monitor that docks to the edge of your Windows desktop. CPU, GPU, RAM, drives, network, clock, system and battery widgets in **ten glass designs** and **19 color themes**, every widget in the design you choose, as one portable EXE with .NET included.
+A glass-styled hardware monitor that docks to the edge of your Windows desktop. CPU, GPU, RAM, drives, network, clock, system and battery widgets in **13 designs** and **19 color themes**, every widget in the design you choose, as one portable EXE with .NET included.
 
-**[Download v1.02.0.0](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.02.0.0/Sidebar-Remastered-v1.02.0.0.exe)** · [Source ZIP](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.02.0.0/Sidebar-v1.02.0.0-Source.zip) · [All releases](https://github.com/nemesis122/New-Sidebar-Remastered/releases)
+**[Download v1.03.0.0](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.03.0.0/Sidebar-Remastered-v1.03.0.0.exe)** · [Source ZIP](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.03.0.0/Sidebar-v1.03.0.0-Source.zip) · [All releases](https://github.com/nemesis122/New-Sidebar-Remastered/releases)
 
 <p align="center">
 <a href="Previews/LiquidGlass-2Column.png"><img src="Previews/LiquidGlass-2Column.png" width="560" alt="Liquid Glass, two columns, demo data"></a>
@@ -12,9 +12,9 @@ A glass-styled hardware monitor that docks to the edge of your Windows desktop. 
 
 Sidebar Remastered is the glass edition of [Sidebar by NemeSIS](https://github.com/nemesis122/NewSidebar). It keeps the same sensor engine and settings, focuses on one design family, and installs side by side with the original: its own EXE, settings file (`remastered-settings.json`) and Windows startup task.
 
-## Ten glass designs
+## 13 designs
 
-Every design shares one construction: a translucent slab, a rim that catches light at the top edge and a sheen across the upper third. The designs differ in material and in how they hold the readings.
+Ten glass designs share one construction: a translucent slab, a rim that catches light at the top edge and a sheen across the upper third; they differ in material and in how they hold the readings. Three more take other directions: Acrylic Widgets in the style of desktop widgets, Liquid Glass 2.0 with glossy borderless capsules, and the flat Clean Dashboard.
 
 | Design | Form | Character |
 | --- | --- | --- |
@@ -28,17 +28,22 @@ Every design shares one construction: a translucent slab, a rim that catches lig
 | **Glass Columns** | Columns | An equalizer of vertical glass tubes with values beneath |
 | **Glass Ring** | Ring | The main reading as a glass ring, the rest as slim tubes |
 | **Glass Inline** | Inline | One dense line per reading: label, short bar, value |
+| **Acrylic Widgets** | Widget | Windows-widget style: icon chip, 60-second sparkline and trend beside the number, thin bars |
+| **Liquid Glass 2.0** | Capsules | More transparent glass, borderless glossy capsules, larger numbers, levels that glide |
+| **Clean Dashboard** | Flat | Flat and calm: a divider under the number and hairline bars under each reading |
 
 <table>
 <tr><th>Liquid Glass</th><th>Frost Glass</th><th>Aqua Glass</th><th>Prism Glass</th><th>Smoke Glass</th></tr>
 <tr><td valign="top"><a href="Previews/LiquidGlass-1Column.png"><img src="Previews/LiquidGlass-1Column.png" width="150" alt="Liquid Glass, one column"></a></td><td valign="top"><a href="Previews/FrostGlass-1Column.png"><img src="Previews/FrostGlass-1Column.png" width="150" alt="Frost Glass, one column"></a></td><td valign="top"><a href="Previews/AquaGlass-1Column.png"><img src="Previews/AquaGlass-1Column.png" width="150" alt="Aqua Glass, one column"></a></td><td valign="top"><a href="Previews/PrismGlass-1Column.png"><img src="Previews/PrismGlass-1Column.png" width="150" alt="Prism Glass, one column"></a></td><td valign="top"><a href="Previews/SmokeGlass-1Column.png"><img src="Previews/SmokeGlass-1Column.png" width="150" alt="Smoke Glass, one column"></a></td></tr>
 <tr><th>Glass Tubes</th><th>Glass Tiles</th><th>Glass Columns</th><th>Glass Ring</th><th>Glass Inline</th></tr>
 <tr><td valign="top"><a href="Previews/GlassTubes-1Column.png"><img src="Previews/GlassTubes-1Column.png" width="150" alt="Glass Tubes, one column"></a></td><td valign="top"><a href="Previews/GlassTiles-1Column.png"><img src="Previews/GlassTiles-1Column.png" width="150" alt="Glass Tiles, one column"></a></td><td valign="top"><a href="Previews/GlassColumns-1Column.png"><img src="Previews/GlassColumns-1Column.png" width="150" alt="Glass Columns, one column"></a></td><td valign="top"><a href="Previews/GlassRing-1Column.png"><img src="Previews/GlassRing-1Column.png" width="150" alt="Glass Ring, one column"></a></td><td valign="top"><a href="Previews/GlassInline-1Column.png"><img src="Previews/GlassInline-1Column.png" width="150" alt="Glass Inline, one column"></a></td></tr>
+<tr><th>Acrylic Widgets</th><th>Liquid Glass 2.0</th><th>Clean Dashboard</th></tr>
+<tr><td valign="top"><a href="Previews/AcrylicWidgets-1Column.png"><img src="Previews/AcrylicWidgets-1Column.png" width="150" alt="Acrylic Widgets, one column"></a></td><td valign="top"><a href="Previews/LiquidGlass2-1Column.png"><img src="Previews/LiquidGlass2-1Column.png" width="150" alt="Liquid Glass 2.0, one column"></a></td><td valign="top"><a href="Previews/CleanDashboard-1Column.png"><img src="Previews/CleanDashboard-1Column.png" width="150" alt="Clean Dashboard, one column"></a></td></tr>
 </table>
 
-- **Temperature first:** CPU, GPU and drives show their temperature as the large number (inside the ring in Glass Ring); RAM shows its load.
-- **Live traces:** network download/upload and drive read/write show the last 60 seconds in glass, scaled to the last minute's peak.
-- **Link use:** the link-speed glass fills with the share of the link in use right now.
+- **Temperature first:** CPU, GPU and drives show their temperature as the large number (inside the ring in Glass Ring); RAM shows its load, the clock its time.
+- **Live traces:** network download/upload and drive read/write show the last 60 seconds, scaled to the last minute's peak.
+- **Link use:** the link-speed bar fills with the share of the link in use right now.
 - **Precise readings:** voltages with three decimals, clocks in GHz with two, memory sizes with one, link speeds like 2.5 Gbit/s.
 
 ### Two columns
@@ -55,6 +60,9 @@ Every design shares one construction: a translucent slab, a rim that catches lig
 <tr><td>Glass Columns</td><td><a href="Previews/GlassColumns-2Column.png"><img src="Previews/GlassColumns-2Column.png" width="320" alt="Glass Columns, two columns"></a></td></tr>
 <tr><td>Glass Ring</td><td><a href="Previews/GlassRing-2Column.png"><img src="Previews/GlassRing-2Column.png" width="320" alt="Glass Ring, two columns"></a></td></tr>
 <tr><td>Glass Inline</td><td><a href="Previews/GlassInline-2Column.png"><img src="Previews/GlassInline-2Column.png" width="320" alt="Glass Inline, two columns"></a></td></tr>
+<tr><td>Acrylic Widgets</td><td><a href="Previews/AcrylicWidgets-2Column.png"><img src="Previews/AcrylicWidgets-2Column.png" width="320" alt="Acrylic Widgets, two columns"></a></td></tr>
+<tr><td>Liquid Glass 2.0</td><td><a href="Previews/LiquidGlass2-2Column.png"><img src="Previews/LiquidGlass2-2Column.png" width="320" alt="Liquid Glass 2.0, two columns"></a></td></tr>
+<tr><td>Clean Dashboard</td><td><a href="Previews/CleanDashboard-2Column.png"><img src="Previews/CleanDashboard-2Column.png" width="320" alt="Clean Dashboard, two columns"></a></td></tr>
 </table>
 
 ## Design per widget
@@ -94,7 +102,7 @@ The color theme is independent of the design. Here every theme on the Liquid Gla
 
 | Area | What you can change |
 | --- | --- |
-| Design and placement | Ten glass designs, a different design per widget if you like; monitor; left or right edge; column width; 1–4 columns; fit-to-view or scrolling; text below the capsules |
+| Design and placement | 13 designs, a different design per widget if you like; monitor; left or right edge; column width; 1–4 columns; fit-to-view or scrolling; text below the capsules |
 | Typography | Font family, general size, separate widget-title, hardware-name, label, reading, instrument-number and unit sizes; individual visibility |
 | Hardware icons | Show/hide and size |
 | Colors and graphics | Color theme, text/label/hardware-name/reading colors, accent color per widget, secondary color, capsule track, graphic size and line/bar thickness |

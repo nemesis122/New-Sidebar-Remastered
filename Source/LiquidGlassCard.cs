@@ -15,9 +15,13 @@ namespace Aurora;
 //  Columns – an equalizer of vertical glass tubes with values beneath
 //  Ring    – the main reading as a glass ring, the rest as slim tubes
 //  Inline  – one dense line per reading: label, short bar, value
+//  Fluent  – Windows-widget style: icon chip, sparkline and trend beside the number, thin bars
+//  Clean   – flat dashboard: no sheen, a divider under the number, hairline bars under each row
+// Gloss adds an inner highlight to borderless capsules; Animate lets fill levels glide.
 // Throughput (download/upload, drive read/write) always shows a live 60-second trace.
 public sealed record GlassStyle(string Key,double Lift=.10,byte Top=235,byte Bottom=200,double Radius=16,byte Sheen=34,double SheenHeight=46,
- byte RimTop=110,byte RimBottom=18,double Tint=0,double Smoke=0,bool Prism=false,bool Tubes=false,byte LiquidA=120,byte LiquidB=150,double TrackLift=0,double PillHeight=24,string Form="Capsule")
+ byte RimTop=110,byte RimBottom=18,double Tint=0,double Smoke=0,bool Prism=false,bool Tubes=false,byte LiquidA=120,byte LiquidB=150,double TrackLift=0,double PillHeight=24,string Form="Capsule",
+ bool Gloss=false,bool Animate=false,bool Flat=false,double HeroSize=30)
 {
  public static readonly GlassStyle[] All={
   new("LiquidGlass"),
@@ -30,7 +34,10 @@ public sealed record GlassStyle(string Key,double Lift=.10,byte Top=235,byte Bot
   new("GlassTiles",Lift:.14,Radius:18,Sheen:30,RimTop:130,RimBottom:26,LiquidA:66,LiquidB:96,Form:"Tiles"),
   new("GlassColumns",Lift:.08,Radius:16,Sheen:26,RimTop:120,RimBottom:20,LiquidA:140,LiquidB:190,Form:"Columns"),
   new("GlassRing",Lift:.12,Radius:22,Sheen:40,SheenHeight:52,RimTop:140,RimBottom:30,PillHeight:6,Form:"Ring"),
-  new("GlassInline",Lift:.06,Radius:12,Sheen:22,SheenHeight:32,RimTop:100,RimBottom:16,LiquidA:150,LiquidB:185,PillHeight:6,Form:"Inline")
+  new("GlassInline",Lift:.06,Radius:12,Sheen:22,SheenHeight:32,RimTop:100,RimBottom:16,LiquidA:150,LiquidB:185,PillHeight:6,Form:"Inline"),
+  new("AcrylicWidgets",Lift:.16,Top:205,Bottom:175,Radius:8,Sheen:12,SheenHeight:30,RimTop:46,RimBottom:30,LiquidA:190,LiquidB:230,PillHeight:4,Form:"Fluent",HeroSize:32),
+  new("LiquidGlass2",Lift:.12,Top:190,Bottom:145,Radius:24,Sheen:60,SheenHeight:72,RimTop:210,RimBottom:34,LiquidA:150,LiquidB:200,PillHeight:26,Gloss:true,Animate:true,HeroSize:40),
+  new("CleanDashboard",Lift:0,Top:235,Bottom:235,Radius:10,Sheen:0,SheenHeight:0,RimTop:44,RimBottom:44,LiquidA:210,LiquidB:230,PillHeight:3,Form:"Clean",Flat:true,HeroSize:34)
  };
  public static GlassStyle Get(string key)=>All.FirstOrDefault(s=>s.Key==key)??All[0];
 }
@@ -48,6 +55,7 @@ public sealed class LiquidGlassCard:ModernCardBase
  private readonly HashSet<string> links=new();
  private readonly List<(string Id,TraceCapsule Trace)> traces=new();
  private readonly GlassRing? ring;
+ private readonly TextBlock? trend;
  public LiquidGlassCard(Device device,Preferences p,MetricHistory history):this(device,p,history,GlassStyle.All[0]){}
  public LiquidGlassCard(Device device,Preferences p,MetricHistory history,GlassStyle style):base(device,p)
  {
@@ -71,7 +79,7 @@ public sealed class LiquidGlassCard:ModernCardBase
   root.Children.Add(new FrameDecoration{CornerRadius=new CornerRadius(Math.Max(0,style.Radius-1),Math.Max(0,style.Radius-1),40,40),VerticalAlignment=VerticalAlignment.Top,Height=style.SheenHeight,IsHitTestVisible=false,
    Background=new LinearGradientBrush(Color.FromArgb(sheen,255,255,255),Color.FromArgb(0,255,255,255),new Point(0,0),style.Prism?new Point(.7,1):new Point(0,1))});
   var body=new ExpandedReadingsPanel(p,1){Margin=new Thickness(14,12,14,13)};root.Children.Add(body);
-  body.Children.Add(Header(device,p));
+  body.Children.Add(style.Form=="Fluent"?ChipHeader(device,p):Header(device,p));
   var content=new GrowPanel();body.Children.Add(content);
   bool network=device.Category=="Network";
   var hero=network?null:HeroMetric(device);
@@ -81,7 +89,7 @@ public sealed class LiquidGlassCard:ModernCardBase
   // Text heroes: the clock leads with its time, the system widget with its uptime.
   if(hero!=null&&(Plottable(hero)||hero.TextValue!=null&&hero.Unit!="IP"))
   {
-   heroId=hero.Id;(number,unit)=HeroNumber(p,style.Form=="Inline"?24:30);
+   heroId=hero.Id;(number,unit)=HeroNumber(p,style.Form=="Inline"?24:style.HeroSize);
    var line=new StackPanel{Orientation=Orientation.Horizontal};line.Children.Add(number);line.Children.Add(unit);
    if(style.Form=="Ring")
    {
@@ -92,8 +100,24 @@ public sealed class LiquidGlassCard:ModernCardBase
     face.Children.Add(new Viewbox{Child=line,Stretch=Stretch.Uniform,StretchDirection=StretchDirection.DownOnly,MaxWidth=size*.62,MaxHeight=size*.42,HorizontalAlignment=HorizontalAlignment.Center,VerticalAlignment=VerticalAlignment.Center});
     content.Children.Add(new Viewbox{Child=face,Stretch=Stretch.Uniform,StretchDirection=StretchDirection.DownOnly,HorizontalAlignment=HorizontalAlignment.Center,Margin=new Thickness(0,0,0,10)});
    }
+   else if(style.Form=="Fluent")
+   {
+    // Number left; its trend and a 60-second sparkline on the right, like a Windows widget.
+    var heroRow=new Grid{Margin=new Thickness(0,0,0,10)};heroRow.ColumnDefinitions.Add(new(){Width=GridLength.Auto});heroRow.ColumnDefinitions.Add(new(){Width=GridLength.Auto});heroRow.ColumnDefinitions.Add(new(){Width=new GridLength(1,GridUnitType.Star),MinWidth=30});
+    heroRow.Children.Add(new Viewbox{Child=line,Stretch=Stretch.Uniform,StretchDirection=StretchDirection.DownOnly,HorizontalAlignment=HorizontalAlignment.Left,VerticalAlignment=VerticalAlignment.Bottom});
+    if(hero.TextValue==null)
+    {
+     trend=Ui.Text("",11*S*F(p.LabelTextScale),"Muted");trend.VerticalAlignment=VerticalAlignment.Bottom;trend.Margin=new Thickness(8,0,8,5*S);Grid.SetColumn(trend,1);heroRow.Children.Add(trend);
+     var spark=new TraceCapsule(D.Track,Accent,second,style,stroke,true,light){Bare=true,Height=30*scale,VerticalAlignment=VerticalAlignment.Bottom,Margin=new Thickness(0,0,0,3)};traces.Add((hero.Id,spark));Grid.SetColumn(spark,2);heroRow.Children.Add(spark);
+    }
+    content.Children.Add(heroRow);
+   }
    // The big number leads; its own capsule below names it and shows its level.
-   else content.Children.Add(new Viewbox{Child=line,Stretch=Stretch.Uniform,StretchDirection=StretchDirection.DownOnly,HorizontalAlignment=HorizontalAlignment.Left,Margin=new Thickness(0,0,0,style.Form=="Inline"?6:9)});
+   else
+   {
+    content.Children.Add(new Viewbox{Child=line,Stretch=Stretch.Uniform,StretchDirection=StretchDirection.DownOnly,HorizontalAlignment=HorizontalAlignment.Left,Margin=new Thickness(0,0,0,style.Form=="Inline"?6:style.Form=="Clean"?10:9)});
+    if(style.Form=="Clean")content.Children.Add(new Border{Height=1,Margin=new Thickness(0,0,0,10),Background=new SolidColorBrush(Color.FromArgb(140,C(D.Track).R,C(D.Track).G,C(D.Track).B))});
+   }
   }
   bool below=CardLayouts.ReadingsBelow(p);
   double textRow=Math.Max(10.5*F(p.LabelTextScale),12*F(p.ValueTextScale))*S*1.45;
@@ -110,7 +134,7 @@ public sealed class LiquidGlassCard:ModernCardBase
    if(form=="Columns")columns=Math.Min(columns,levelMetrics.Count);
    grid=new System.Windows.Controls.Primitives.UniformGrid{Columns=columns,Margin=new Thickness(0,0,form=="Tiles"?-6:0,form=="Tiles"?0:6)};
   }
-  if(form=="Inline")Grid.SetIsSharedSizeScope(content,true);
+  if(form is "Inline" or "Fluent")Grid.SetIsSharedSizeScope(content,true);
   bool gridPlaced=false;
   foreach(var m in device.Metrics)
   {
@@ -149,7 +173,7 @@ public sealed class LiquidGlassCard:ModernCardBase
     }
     continue;
    }
-   if(form=="Inline")
+   if(form is "Inline" or "Fluent")
    {
     // One dense line: label | short bar or trace | value, with shared column edges.
     var line=new Grid{Margin=new Thickness(0,traced?2:1,0,traced?2:1)};
@@ -161,13 +185,13 @@ public sealed class LiquidGlassCard:ModernCardBase
     var value=Value(m,p,12);value.VerticalAlignment=VerticalAlignment.Center;value.TextAlignment=TextAlignment.Right;value.MinWidth=50*S;value.Margin=new Thickness(6,0,0,0);Grid.SetColumn(value,2);line.Children.Add(value);
     content.Children.Add(line);continue;
    }
-   bool separate=form is "Tubes" or "Ring" or "Tiles" or "Columns"||below;
+   bool separate=form is "Tubes" or "Ring" or "Tiles" or "Columns" or "Clean"||below;
    FrameworkElement piece=traced?NewTrace(separate):NewCapsule();
    if(separate)
    {
     // Reading row and glass on separate lines: tubes put the row above, the text-below option beneath.
     // Slim tubes are 7 px at 100 %; capsule styles under "text below" use half their capsule height.
-    double thickness=(form=="Capsule"?style.PillHeight*.5:style.PillHeight<=10?Math.Max(style.PillHeight,6):7)*S*stroke;
+    double thickness=(form=="Capsule"?style.PillHeight*.5:style.PillHeight<=10?Math.Max(style.PillHeight,form=="Clean"?2:6):7)*S*stroke;
     if(piece is Capsule tube)tube.BarThickness=thickness;
     piece.MinHeight=traced?Math.Max(10,22*scale):Math.Max(3,thickness);
     // Bars keep exactly the set thickness in every card; only traces take spare height.
@@ -192,6 +216,18 @@ public sealed class LiquidGlassCard:ModernCardBase
   }
   Update(device,p);
  }
+ // Change against the reading about ten seconds ago, e.g. "▲ 3"; quiet when it barely moves.
+ private static string Trend(Metric? metric,IReadOnlyList<HistorySample> samples,DateTime now,Preferences p)
+ {
+  if(metric?.Value is not double current||!double.IsFinite(current))return "";
+  var earlier=samples.LastOrDefault(s=>s.Value.HasValue&&double.IsFinite(s.Value.Value)&&(now-s.Time).TotalSeconds>=10);
+  if(earlier.Value is not double before)return "";
+  double delta=current-before;if(metric.Unit=="°C"&&p.Fahrenheit)delta*=1.8;
+  double step=metric.Unit is "%" or "°C" or "W"?1:Math.Max(Math.Abs(before)*.03,.01);
+  if(Math.Abs(delta)<step)return "";
+  string amount=Math.Abs(delta)>=1?Math.Abs(delta).ToString("0",System.Globalization.CultureInfo.InvariantCulture):Math.Abs(delta).ToString("0.##",System.Globalization.CultureInfo.InvariantCulture);
+  return (delta>0?"▲ ":"▼ ")+amount;
+ }
  // Share of the link in use: (download + upload) against the link speed, both in MB/s.
  private static double? LinkUse(Device device,Metric? link)
  {
@@ -203,6 +239,18 @@ public sealed class LiquidGlassCard:ModernCardBase
  }
  private static readonly System.Windows.Media.Effects.DropShadowEffect TextHalo=CreateHalo();
  private static System.Windows.Media.Effects.DropShadowEffect CreateHalo(){var halo=new System.Windows.Media.Effects.DropShadowEffect{Color=Colors.Black,ShadowDepth=0,BlurRadius=4,Opacity=.85};halo.Freeze();return halo;}
+ // Windows-widget header: the hardware icon in a tinted chip, title and hardware name beside it.
+ private FrameworkElement ChipHeader(Device device,Preferences p)
+ {
+  var row=new Grid{Margin=new Thickness(0,0,0,10)};row.ColumnDefinitions.Add(new(){Width=GridLength.Auto});row.ColumnDefinitions.Add(new(){Width=new GridLength(1,GridUnitType.Star)});
+  var icon=Ui.HardwareIcon(device.Category,15*S*F(p.TitleTextScale));icon.Margin=new Thickness(0);icon.SetValue(System.Windows.Shapes.Shape.StrokeProperty,Ui.Brush(Accent));
+  var a=C(Accent);var chip=new Border{Child=icon,CornerRadius=new CornerRadius(7),Padding=new Thickness(6),Margin=new Thickness(0,0,10,0),VerticalAlignment=VerticalAlignment.Center,Background=new SolidColorBrush(Color.FromArgb(48,a.R,a.G,a.B))};
+  chip.SetBinding(VisibilityProperty,new System.Windows.Data.Binding(nameof(Visibility)){Source=icon});row.Children.Add(chip);
+  var text=new StackPanel{VerticalAlignment=VerticalAlignment.Center};Grid.SetColumn(text,1);row.Children.Add(text);
+  var title=Ui.SidebarText(device.Category,11*S*F(p.TitleTextScale));title.FontWeight=FontWeights.SemiBold;text.Children.Add(title);
+  var name=Ui.HardwareTitle(device.Name,12.5*S*F(p.HardwareTextScale),p.HardwareNames.ContainsKey(device.Id));name.TextWrapping=TextWrapping.Wrap;name.TextTrimming=TextTrimming.None;name.Margin=new Thickness(0,1,0,0);text.Children.Add(name);
+  return row;
+ }
  private static double Luminance(Color c)=>(.2126*c.R+.7152*c.G+.0722*c.B)/255;
  public sealed class FrameDecoration:Border{}
  private static string HueShift(string hex,double degrees)
@@ -224,6 +272,7 @@ public sealed class LiquidGlassCard:ModernCardBase
    ?new LinearGradientBrush(new GradientStopCollection{new GradientStop(Color.FromArgb(style.RimTop,a.R,a.G,a.B),0),new GradientStop(Color.FromArgb(style.RimTop,white.R,white.G,white.B),.35),new GradientStop(Color.FromArgb(style.RimBottom,b.R,b.G,b.B),1)},new Point(0,0),new Point(1,1))
    :new LinearGradientBrush(rimTop,rimBottom,new Point(0,0),new Point(0,1));
   var heroMetric=device.Metrics.FirstOrDefault(m=>m.Id==heroId);SetHero(number,unit,heroMetric,p);
+  if(trend!=null)trend.Text=Trend(heroMetric,history.Read(DeviceId,heroId??""),history.LatestTime,p);
   // A text hero (clock) fills its ring with the first percentage instead, e.g. the day progress.
   ring?.Set(Ratio(heroMetric)??device.Metrics.Where(m=>m.Unit=="%").Select(Ratio).FirstOrDefault(r=>r!=null),heroMetric!=null&&Warn(heroMetric,p));
   foreach(var (id,pill,level) in pills){var m=device.Metrics.FirstOrDefault(x=>x.Id==id);if(links.Contains(id))pill.Exact=true;pill.Set(links.Contains(id)?LinkUse(device,m):level?Ratio(m):null,m!=null&&Warn(m,p));}
@@ -233,7 +282,7 @@ public sealed class LiquidGlassCard:ModernCardBase
  {
   var t=style.TrackLift>0?Mix(track,Colors.White,style.TrackLift):track;
   var hairline=light?Color.FromArgb(40,0,0,0):Color.FromArgb(28,255,255,255);
-  dc.DrawRoundedRectangle(new SolidColorBrush(Color.FromArgb((byte)(style.TrackLift>0?170:150),t.R,t.G,t.B)),r>=3?new Pen(new SolidColorBrush(hairline),1):null,shape,r,r);
+  dc.DrawRoundedRectangle(new SolidColorBrush(Color.FromArgb((byte)(style.TrackLift>0?170:150),t.R,t.G,t.B)),r>=3&&!style.Gloss&&!style.Flat?new Pen(new SolidColorBrush(hairline),1):null,shape,r,r);
  }
  // Liquid fill to the reading's level with a bright meniscus at its leading edge.
  public sealed class Capsule:FrameworkElement
@@ -248,12 +297,23 @@ public sealed class LiquidGlassCard:ModernCardBase
   public Capsule(string track,string accent,string secondary,GlassStyle style,double stroke,bool light){this.track=C(track);start=C(accent);end=C(secondary);this.style=style;this.stroke=stroke;this.light=light;IsHitTestVisible=false;}
   // Exact: the fill shows the true share without a minimum stub (link use is often near zero).
   public bool Exact {get;set;}
-  public void Set(double? r,bool w){ratio=r;hot=w;InvalidateVisual();}
+  // Animated styles glide to a new level; the drawn level is this dependency property.
+  public static readonly DependencyProperty LevelProperty=DependencyProperty.Register(nameof(Level),typeof(double),typeof(Capsule),new FrameworkPropertyMetadata(0.0,FrameworkPropertyMetadataOptions.AffectsRender));
+  public double Level{get=>(double)GetValue(LevelProperty);set=>SetValue(LevelProperty,value);}
+  private bool shown;
+  public void Set(double? r,bool w)
+  {
+   // The first reading appears at once; later readings glide from the shown level.
+   bool first=!shown;shown|=r.HasValue;ratio=r;hot=w;
+   if(style.Animate&&!first&&r is double target&&SystemParameters.ClientAreaAnimation)BeginAnimation(LevelProperty,new System.Windows.Media.Animation.DoubleAnimation(target,TimeSpan.FromMilliseconds(450)){EasingFunction=new System.Windows.Media.Animation.CubicEase{EasingMode=System.Windows.Media.Animation.EasingMode.EaseOut}});
+   else{BeginAnimation(LevelProperty,null);Level=r??0;}
+   InvalidateVisual();
+  }
   protected override void OnRender(DrawingContext dc)
   {
    double w=ActualWidth,h=ActualHeight;if(w<=0||h<=0)return;double r=Corner??Math.Min(w,h)/2;var shape=new Rect(0,0,w,h);
    DrawGlassTrack(dc,shape,r,track,style,light);
-   if(ratio is not double v||v<=0)return;
+   if(ratio==null)return;double v=Math.Clamp(Level,0,1);if(v<=0)return;
    var clip=new RectangleGeometry(shape,r,r);clip.Freeze();dc.PushClip(clip);
    var a=hot?warn:start;var b=hot?warn:end;
    if(Vertical)
@@ -276,6 +336,8 @@ public sealed class LiquidGlassCard:ModernCardBase
    if(h>=10&&fillWidth>=meniscus){var edge=Color.FromArgb(210,a.R,a.G,a.B);var clear=Color.FromArgb(0,a.R,a.G,a.B);
     var fade=new LinearGradientBrush(new GradientStopCollection{new GradientStop(edge,0),new GradientStop(edge,.22),new GradientStop(clear,.36),new GradientStop(clear,.64),new GradientStop(edge,.78),new GradientStop(edge,1)},new Point(0,0),new Point(0,1));fade.Freeze();
     dc.DrawRectangle(fade,null,new Rect(Math.Max(0,fillWidth-meniscus),0,meniscus,h));}
+   // Gloss: an inner highlight across the upper half of the whole capsule, like polished glass.
+   if(style.Gloss)dc.DrawRectangle(new LinearGradientBrush(Color.FromArgb(light?(byte)70:(byte)58,255,255,255),Color.FromArgb(0,255,255,255),new Point(0,0),new Point(0,.55)),null,new Rect(0,0,w,h));
    // Smoke glass: a glowing hairline along the top of the smoky liquid.
    if(style.Smoke>0&&!light)dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(150,a.R,a.G,a.B)),null,new Rect(0,0,fillWidth,Math.Max(1,stroke)));
    dc.Pop();
@@ -313,14 +375,18 @@ public sealed class LiquidGlassCard:ModernCardBase
   // full: the reading row sits outside, so the trace may use the whole capsule height.
   public TraceCapsule(string track,string accent,string secondary,GlassStyle style,double stroke,bool full,bool light){this.track=C(track);start=C(accent);end=C(secondary);this.style=style;this.stroke=stroke;this.full=full;this.light=light;IsHitTestVisible=false;}
   public int SampleCount=>samples.Count;
+  // Bare: a sparkline without glass track, scaled between its own minimum and maximum.
+  public bool Bare {get;set;}
   public void Set(IReadOnlyList<HistorySample> s,DateTime now,TimeSpan gap){samples=s;this.now=now;this.gap=gap;InvalidateVisual();}
   protected override void OnRender(DrawingContext dc)
   {
    double w=ActualWidth,h=ActualHeight;if(w<=4||h<=4)return;double r=Math.Min(h/2,style.Tubes?h/2:12);var shape=new Rect(0,0,w,h);
-   DrawGlassTrack(dc,shape,r,track,style,light);
+   if(!Bare)DrawGlassTrack(dc,shape,r,track,style,light);
    var clip=new RectangleGeometry(shape,r,r);clip.Freeze();dc.PushClip(clip);
    // A small floor keeps idle noise from filling the capsule.
    double peak=Math.Max(.05,samples.Where(s=>s.Value is double v&&double.IsFinite(v)).Select(s=>s.Value!.Value).DefaultIfEmpty(0).Max()*1.15);
+   var finite=samples.Where(s=>s.Value is double v&&double.IsFinite(v)).Select(s=>s.Value!.Value).ToArray();
+   double low=Bare&&finite.Length>0?finite.Min():0,high=Bare&&finite.Length>0?finite.Max():peak;if(Bare&&high-low<1){double mid=(high+low)/2;low=mid-.5;high=mid+.5;}
    double top=full?1+stroke:h*.42,bottom=h;// with text inside, the upper part stays clear for it
    var segments=new List<List<Point>>();var points=new List<Point>();DateTime? previous=null;
    foreach(var s in samples)
@@ -328,7 +394,8 @@ public sealed class LiquidGlassCard:ModernCardBase
     double age=(now-s.Time).TotalSeconds;if(age<0||age>60)continue;
     if(s.Value is not double v||!double.IsFinite(v)){if(points.Count>0)segments.Add(points);points=new();previous=null;continue;}
     if(previous.HasValue&&s.Time-previous.Value>gap&&points.Count>0){segments.Add(points);points=new();}
-    points.Add(new Point(w*(1-age/60),bottom-(bottom-top)*Math.Clamp(Math.Max(0,v)/peak,0,1)));previous=s.Time;
+    double share=Bare?(v-low)/(high-low):Math.Max(0,v)/peak;
+    points.Add(new Point(w*(1-age/60),bottom-(bottom-top)*Math.Clamp(share,0,1)));previous=s.Time;
    }
    if(points.Count>0)segments.Add(points);
    var fill=new LinearGradientBrush(Color.FromArgb(style.LiquidB,start.R,start.G,start.B),Color.FromArgb((byte)(style.LiquidA/4),end.R,end.G,end.B),new Point(0,0),new Point(0,1));fill.Freeze();
