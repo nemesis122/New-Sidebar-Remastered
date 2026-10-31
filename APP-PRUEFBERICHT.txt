@@ -1,0 +1,10 @@
+Prüfbericht — Sidebar Remastered by NemeSIS v1.00.0.0
+
+Diese Version wird vom Release-Workflow auf einem Windows-Server gebaut und nur veröffentlicht, wenn alle drei Testsammlungen bestanden sind:
+- Daten- und Konfigurationsprüfungen (Anzeigeformate, Einstellungen, Migration, Verlauf)
+- Sensor-Zuordnungsprüfungen (simulierte AMD-, Intel-, NVIDIA-, Radeon- und Arc-Profile, beide Sensorquellen)
+- Native UI-Prüfungen (alle Glas-Designs mit allen Farbschemata, Breiten, Textgrößen, Farben, Spalten, Einstellungsseiten und Zurücksetzen-Knöpfen)
+
+Die genauen Zahlen des Laufs stehen in VALIDATION.txt im Release-Paket.
+Eigenständig neben „Sidebar by NemeSIS“: eigene EXE, eigene Einstellungsdatei (remastered-settings.json), eigener Autostart-Task.
+Physisch getestet nur auf Ryzen 9 5900X / RTX 3080 / ASUS X570. Keine Garantie für jede Hardware, kein Neustart- oder Langzeittest.
