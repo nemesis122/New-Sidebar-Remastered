@@ -162,7 +162,8 @@ public sealed class LiquidGlassCard:ModernCardBase
    if(separate)
    {
     // Reading row and glass on separate lines: tubes put the row above, the text-below option beneath.
-    double thickness=(form=="Capsule"?style.PillHeight*.5:Math.Max(style.PillHeight,7))*S*stroke;
+    // Slim tubes are 7 px at 100 %; capsule styles under "text below" use half their capsule height.
+    double thickness=(form=="Capsule"?style.PillHeight*.5:style.PillHeight<=10?Math.Max(style.PillHeight,6):7)*S*stroke;
     if(piece is Capsule tube)tube.BarThickness=thickness;
     piece.MinHeight=traced?Math.Max(10,22*scale):Math.Max(3,thickness);
     // Bars keep exactly the set thickness in every card; only traces take spare height.

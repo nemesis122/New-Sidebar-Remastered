@@ -2,7 +2,7 @@
 
 A glass-styled hardware monitor that docks to the edge of your Windows desktop. CPU, GPU, RAM, drives and network in **ten glass designs** and **19 color themes**, as one portable EXE with .NET included.
 
-**[Download v1.01.0.0](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.01.0.0/Sidebar-Remastered-v1.01.0.0.exe)** · [Source ZIP](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.01.0.0/Sidebar-v1.01.0.0-Source.zip) · [All releases](https://github.com/nemesis122/New-Sidebar-Remastered/releases)
+**[Download v1.01.1.0](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.01.1.0/Sidebar-Remastered-v1.01.1.0.exe)** · [Source ZIP](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.01.1.0/Sidebar-v1.01.1.0-Source.zip) · [All releases](https://github.com/nemesis122/New-Sidebar-Remastered/releases)
 
 <p align="center">
 <a href="Previews/LiquidGlass-2Column.png"><img src="Previews/LiquidGlass-2Column.png" width="560" alt="Liquid Glass, two columns, demo data"></a>
