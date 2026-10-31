@@ -15,7 +15,7 @@ namespace Aurora;
 //  Columns – an equalizer of vertical glass tubes with values beneath
 //  Ring    – the main reading as a glass ring, the rest as slim tubes
 //  Inline  – one dense line per reading: label, short bar, value
-//  Fluent  – Windows-widget style: icon chip, sparkline and trend beside the number, thin bars
+//  Fluent  – Windows-widget style: icon chip and sparkline beside the number, thin bars
 //  Clean   – flat dashboard: no sheen, a divider under the number, hairline bars under each row
 // Gloss adds an inner highlight to borderless capsules; Animate lets fill levels glide.
 // Throughput (download/upload, drive read/write) always shows a live 60-second trace.
@@ -55,7 +55,6 @@ public sealed class LiquidGlassCard:ModernCardBase
  private readonly HashSet<string> links=new();
  private readonly List<(string Id,TraceCapsule Trace)> traces=new();
  private readonly GlassRing? ring;
- private readonly TextBlock? trend;
  public LiquidGlassCard(Device device,Preferences p,MetricHistory history):this(device,p,history,GlassStyle.All[0]){}
  public LiquidGlassCard(Device device,Preferences p,MetricHistory history,GlassStyle style):base(device,p)
  {
@@ -102,13 +101,12 @@ public sealed class LiquidGlassCard:ModernCardBase
    }
    else if(style.Form=="Fluent")
    {
-    // Number left; its trend and a 60-second sparkline on the right, like a Windows widget.
+    // Number left; a 60-second sparkline on the right, like a Windows widget.
     var heroRow=new Grid{Margin=new Thickness(0,0,0,10)};heroRow.ColumnDefinitions.Add(new(){Width=GridLength.Auto});heroRow.ColumnDefinitions.Add(new(){Width=GridLength.Auto});heroRow.ColumnDefinitions.Add(new(){Width=new GridLength(1,GridUnitType.Star),MinWidth=30});
     heroRow.Children.Add(new Viewbox{Child=line,Stretch=Stretch.Uniform,StretchDirection=StretchDirection.DownOnly,HorizontalAlignment=HorizontalAlignment.Left,VerticalAlignment=VerticalAlignment.Bottom});
     if(hero.TextValue==null)
     {
-     trend=Ui.Text("",11*S*F(p.LabelTextScale),"Muted");trend.VerticalAlignment=VerticalAlignment.Bottom;trend.Margin=new Thickness(8,0,8,5*S);Grid.SetColumn(trend,1);heroRow.Children.Add(trend);
-     var spark=new TraceCapsule(D.Track,Accent,second,style,stroke,true,light){Bare=true,Height=30*scale,VerticalAlignment=VerticalAlignment.Bottom,Margin=new Thickness(0,0,0,3)};traces.Add((hero.Id,spark));Grid.SetColumn(spark,2);heroRow.Children.Add(spark);
+     var spark=new TraceCapsule(D.Track,Accent,second,style,stroke,true,light){Bare=true,Height=30*scale,VerticalAlignment=VerticalAlignment.Bottom,Margin=new Thickness(10,0,0,3)};traces.Add((hero.Id,spark));Grid.SetColumn(spark,2);heroRow.Children.Add(spark);
     }
     content.Children.Add(heroRow);
    }
@@ -216,18 +214,6 @@ public sealed class LiquidGlassCard:ModernCardBase
   }
   Update(device,p);
  }
- // Change against the reading about ten seconds ago, e.g. "▲ 3"; quiet when it barely moves.
- private static string Trend(Metric? metric,IReadOnlyList<HistorySample> samples,DateTime now,Preferences p)
- {
-  if(metric?.Value is not double current||!double.IsFinite(current))return "";
-  var earlier=samples.LastOrDefault(s=>s.Value.HasValue&&double.IsFinite(s.Value.Value)&&(now-s.Time).TotalSeconds>=10);
-  if(earlier.Value is not double before)return "";
-  double delta=current-before;if(metric.Unit=="°C"&&p.Fahrenheit)delta*=1.8;
-  double step=metric.Unit is "%" or "°C" or "W"?1:Math.Max(Math.Abs(before)*.03,.01);
-  if(Math.Abs(delta)<step)return "";
-  string amount=Math.Abs(delta)>=1?Math.Abs(delta).ToString("0",System.Globalization.CultureInfo.InvariantCulture):Math.Abs(delta).ToString("0.##",System.Globalization.CultureInfo.InvariantCulture);
-  return (delta>0?"▲ ":"▼ ")+amount;
- }
  // Share of the link in use: (download + upload) against the link speed, both in MB/s.
  private static double? LinkUse(Device device,Metric? link)
  {
@@ -272,7 +258,6 @@ public sealed class LiquidGlassCard:ModernCardBase
    ?new LinearGradientBrush(new GradientStopCollection{new GradientStop(Color.FromArgb(style.RimTop,a.R,a.G,a.B),0),new GradientStop(Color.FromArgb(style.RimTop,white.R,white.G,white.B),.35),new GradientStop(Color.FromArgb(style.RimBottom,b.R,b.G,b.B),1)},new Point(0,0),new Point(1,1))
    :new LinearGradientBrush(rimTop,rimBottom,new Point(0,0),new Point(0,1));
   var heroMetric=device.Metrics.FirstOrDefault(m=>m.Id==heroId);SetHero(number,unit,heroMetric,p);
-  if(trend!=null)trend.Text=Trend(heroMetric,history.Read(DeviceId,heroId??""),history.LatestTime,p);
   // A text hero (clock) fills its ring with the first percentage instead, e.g. the day progress.
   ring?.Set(Ratio(heroMetric)??device.Metrics.Where(m=>m.Unit=="%").Select(Ratio).FirstOrDefault(r=>r!=null),heroMetric!=null&&Warn(heroMetric,p));
   foreach(var (id,pill,level) in pills){var m=device.Metrics.FirstOrDefault(x=>x.Id==id);if(links.Contains(id))pill.Exact=true;pill.Set(links.Contains(id)?LinkUse(device,m):level?Ratio(m):null,m!=null&&Warn(m,p));}

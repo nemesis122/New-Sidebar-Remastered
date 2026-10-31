@@ -2,7 +2,7 @@
 
 A glass-styled hardware monitor that docks to the edge of your Windows desktop. CPU, GPU, RAM, drives, network, clock, system and battery widgets in **13 designs** and **19 color themes**, every widget in the design you choose, as one portable EXE with .NET included.
 
-**[Download v1.03.1.0](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.03.1.0/Sidebar-Remastered-v1.03.1.0.exe)** · [Source ZIP](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.03.1.0/Sidebar-v1.03.1.0-Source.zip) · [All releases](https://github.com/nemesis122/New-Sidebar-Remastered/releases)
+**[Download v1.03.2.0](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.03.2.0/Sidebar-Remastered-v1.03.2.0.exe)** · [Source ZIP](https://github.com/nemesis122/New-Sidebar-Remastered/releases/download/v1.03.2.0/Sidebar-v1.03.2.0-Source.zip) · [All releases](https://github.com/nemesis122/New-Sidebar-Remastered/releases)
 
 <p align="center">
 <a href="Previews/LiquidGlass-2Column.png"><img src="Previews/LiquidGlass-2Column.png" width="560" alt="Liquid Glass, two columns, demo data"></a>
@@ -28,7 +28,7 @@ Ten glass designs share one construction: a translucent slab, a rim that catches
 | **Glass Columns** | Columns | An equalizer of vertical glass tubes with values beneath |
 | **Glass Ring** | Ring | The main reading as a glass ring, the rest as slim tubes |
 | **Glass Inline** | Inline | One dense line per reading: label, short bar, value |
-| **Acrylic Widgets** | Widget | Windows-widget style: icon chip, 60-second sparkline and trend beside the number, thin bars |
+| **Acrylic Widgets** | Widget | Windows-widget style: icon chip, 60-second sparkline beside the number, thin bars |
 | **Liquid Glass 2.0** | Capsules | More transparent glass, borderless glossy capsules, larger numbers, levels that glide |
 | **Clean Dashboard** | Flat | Flat and calm: a divider under the number and hairline bars under each reading |
 
