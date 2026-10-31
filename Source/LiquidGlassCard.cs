@@ -109,6 +109,8 @@ public sealed class LiquidGlassCard:ModernCardBase
     var cell=traced?GrowPanel.Grow(new Grid{Margin=new Thickness(0,0,0,5)},1,2.4):new Grid{Margin=new Thickness(0,0,0,5)};cell.Children.Add(glass);
     var row=new ReadingRow(Label(m.Label,p,10.5),Value(m,p,12)){Margin=new Thickness(11,0,11,0),VerticalAlignment=traced?VerticalAlignment.Top:VerticalAlignment.Center};
     if(traced)row.Margin=new Thickness(12,5,12,0);
+    // Text sits on the liquid: on dark glass a soft dark halo keeps light labels readable over bright fills.
+    if(!light)row.Effect=TextHalo;
     cell.Children.Add(row);content.Children.Add(cell);
    }
   }
@@ -123,6 +125,8 @@ public sealed class LiquidGlassCard:ModernCardBase
    +device.Metrics.Where(m=>m.Unit=="B/s"&&m.Value is double v&&double.IsFinite(v)).Sum(m=>Math.Max(0,m.Value!.Value)/1048576d);
   return Math.Clamp(used/capacity,0,1);
  }
+ private static readonly System.Windows.Media.Effects.DropShadowEffect TextHalo=CreateHalo();
+ private static System.Windows.Media.Effects.DropShadowEffect CreateHalo(){var halo=new System.Windows.Media.Effects.DropShadowEffect{Color=Colors.Black,ShadowDepth=0,BlurRadius=4,Opacity=.85};halo.Freeze();return halo;}
  private static double Luminance(Color c)=>(.2126*c.R+.7152*c.G+.0722*c.B)/255;
  public sealed class FrameDecoration:Border{}
  private static string HueShift(string hex,double degrees)
