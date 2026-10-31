@@ -157,6 +157,7 @@ public sealed class LiquidGlassCard:ModernCardBase
  public sealed class Capsule:FrameworkElement
  {
   private readonly Color track,start,end,warn=C(WarningColor);private readonly GlassStyle style;private readonly double stroke;private readonly bool light;private double? ratio;private bool hot;
+  public Color AccentColor=>start;public Color EndColor=>end;public Color TrackColor=>track;
   public Capsule(string track,string accent,string secondary,GlassStyle style,double stroke,bool light){this.track=C(track);start=C(accent);end=C(secondary);this.style=style;this.stroke=stroke;this.light=light;IsHitTestVisible=false;}
   // Exact: the fill shows the true share without a minimum stub (link use is often near zero).
   public bool Exact {get;set;}
